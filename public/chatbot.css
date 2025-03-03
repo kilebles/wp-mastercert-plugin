@@ -92,6 +92,51 @@
     font-weight: bold;
 }
 
+#chatbot-language {
+    position: absolute;
+    left: 10px;
+    top: 7px;
+    background: none;
+    border: none;
+    font-size: 14px;
+    color: #333;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#chatbot-language:hover {
+    color: #222;
+}
+
+#chatbot-language-select {
+    position: absolute;
+    left: 10px;
+    top: 30px;
+    display: none;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 5px;
+    font-size: 14px;
+    z-index: 1000;
+}
+
+#chatbot-language-select button {
+    display: block;
+    width: 100%;
+    padding: 5px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+}
+
+#chatbot-language-select button:hover {
+    background: #fccc34;
+}
+
 #chatbot-messages {
     flex-grow: 1;
     overflow-y: auto;
