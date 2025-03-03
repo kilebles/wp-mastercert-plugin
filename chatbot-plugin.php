@@ -3,7 +3,7 @@
 Plugin Name: GPT Chatbot
 Plugin URI: https://mastcert.com/
 Description: Чат-бот GPT для консультаций по сертификации.
-Version: 1.0
+Version: 2.0
 Author: Yee
 Author URI: https://mastcert.com/
 License: GPL2

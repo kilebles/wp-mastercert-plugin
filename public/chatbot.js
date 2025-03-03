@@ -1,16 +1,15 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     let chatbotIcon = document.getElementById("chatbot-icon");
     let chatbotContainer = document.getElementById("chatbot-container");
     let sendButton = document.getElementById("chatbot-send");
     let closeButton = document.getElementById("chatbot-close");
     let languageButton = document.getElementById("chatbot-language");
     let languageDropdown = document.getElementById("chatbot-language-select");
-    let inputField = document.getElementById("chatbot-input");
     let messagesContainer = document.getElementById("chatbot-messages");
     let firstMessageSent = false;
     let firstOpen = true;
     let currentLanguage = "ru";
-
+    const inputField = document.getElementById("chatbot-input");
     const translations = {
         ru: {
             greeting: "Привет! Чем могу помочь?",
@@ -26,9 +25,32 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     };
 
-    chatbotIcon.addEventListener("click", function() {
-        chatbotIcon.classList.add("open");
 
+    inputField.addEventListener("input", function () {
+        this.style.height = "auto";
+        this.style.height = this.scrollHeight + "px";
+    });
+
+
+    function sendMessage() {
+        let message = inputField.value.trim();
+        if (!message) return;
+    
+        messagesContainer.innerHTML += `<div class="user-message">${message}</div>`;
+    
+        setTimeout(() => {
+            typeText(translations[currentLanguage].gpt_response);
+        }, 1000);
+    
+        inputField.value = "";
+    
+        inputField.style.height = "40px";  
+    }
+    
+
+    chatbotIcon.addEventListener("click", function () {
+        chatbotIcon.classList.add("open");
+    
         if (firstOpen) {
             chatbotContainer.style.opacity = "0";
             setTimeout(() => {
@@ -42,47 +64,64 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         if (!firstMessageSent) {
+            firstMessageSent = true;
             messagesContainer.innerHTML = "";
             setTimeout(() => {
                 typeText(translations[currentLanguage].greeting);
-                firstMessageSent = true;
             }, 1000);
         }
     });
 
-    closeButton.addEventListener("click", function(event) {
+
+    closeButton.addEventListener("click", function (event) {
         event.stopPropagation();
+
         chatbotContainer.style.opacity = "0";
+        chatbotContainer.style.transform = "scale(0.9)";
+        chatbotIcon.classList.add("closing");
 
         setTimeout(() => {
             chatbotIcon.classList.remove("open");
-        }, 100);
+
+            chatbotContainer.style.opacity = "1";
+            chatbotContainer.style.transform = "scale(1)";
+
+            setTimeout(() => {
+                chatbotIcon.classList.remove("closing");
+            }, 200);
+        }, 300);
     });
+
 
     sendButton.addEventListener("click", sendMessage);
 
-    inputField.addEventListener("keydown", function(event) {
+
+    inputField.addEventListener("keydown", function (event) {
         if (event.key === "Enter" && !event.shiftKey) {
             event.preventDefault();
             sendMessage();
         }
     });
 
+
     languageButton.addEventListener("click", toggleLanguageDropdown);
+
 
     function toggleLanguageDropdown(event) {
         event.stopPropagation();
         languageDropdown.style.display = languageDropdown.style.display === "block" ? "none" : "block";
     }
 
-    document.addEventListener("click", function(event) {
+
+    document.addEventListener("click", function (event) {
         if (!languageButton.contains(event.target) && !languageDropdown.contains(event.target)) {
             languageDropdown.style.display = "none";
         }
     });
 
+
     document.querySelectorAll("#chatbot-language-select button").forEach(button => {
-        button.addEventListener("click", function() {
+        button.addEventListener("click", function () {
             currentLanguage = this.dataset.lang;
             languageDropdown.style.display = "none";
 
@@ -92,6 +131,7 @@ document.addEventListener("DOMContentLoaded", function() {
             typeText(translations[currentLanguage].greeting);
         });
     });
+
 
     function updateUI() {
         document.getElementById("chatbot-header").innerHTML = `
@@ -122,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function() {
         languageButton.addEventListener("click", toggleLanguageDropdown);
 
         document.querySelectorAll("#chatbot-language-select button").forEach(button => {
-            button.addEventListener("click", function() {
+            button.addEventListener("click", function () {
                 currentLanguage = this.dataset.lang;
                 languageDropdown.style.display = "none";
                 messagesContainer.innerHTML = "";
@@ -132,7 +172,7 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         });
 
-        closeButton.addEventListener("click", function(event) {
+        closeButton.addEventListener("click", function (event) {
             event.stopPropagation();
             chatbotContainer.style.opacity = "0";
 
@@ -141,19 +181,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }, 100);
         });
     }
-
-    function sendMessage() {
-        let message = inputField.value.trim();
-        if (!message) return;
-
-        messagesContainer.innerHTML += `<div class="user-message">${message}</div>`;
-
-        setTimeout(() => {
-            typeText(translations[currentLanguage].gpt_response);
-        }, 1000);
-
-        inputField.value = "";
-    }
+    
 
     function typeText(text) {
         let botMessage = document.createElement("div");
