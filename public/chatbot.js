@@ -15,13 +15,13 @@ document.addEventListener("DOMContentLoaded", function () {
             greeting: "Привет! Чем могу помочь?",
             gpt_response: "Ответ GPT...",
             placeholder: "Задайте вопрос...",
-            header: "Ваш виртуальный помощник"
+            header: "Mastercert"
         },
         en: {
             greeting: "Hello! How can I help you?",
             gpt_response: "GPT response...",
             placeholder: "Ask a question...",
-            header: "Your Virtual Assistant"
+            header: "Mastercert"
         }
     };
 
@@ -149,7 +149,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 <button data-lang="en">English</button>
             </div>
             ${translations[currentLanguage].header}
-            <button id="chatbot-close">✖</button>
+            <button id="chatbot-close">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
         `;
 
         sendButton.textContent = translations[currentLanguage].send;

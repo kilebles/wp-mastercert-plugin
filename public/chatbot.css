@@ -37,8 +37,8 @@
 
 #chatbot-icon.open {
     width: 420px;
-    height: 620px;
-    border-radius: 20px;
+    height: 720px;
+    border-radius: 7px;
     background: linear-gradient(135deg, #ffffff 0%, #f2f2f2 100%);
     padding: 0px;
     display: flex;
@@ -73,30 +73,66 @@
 
 #chatbot-header {
     width: 100%;
-    max-width: 100%;
-    margin: 0;
-    padding: 12px;
-    background: #fccc34;
-    color: #444;
+    padding: 20px;
+    background: linear-gradient(180deg, #f9f9f9, #eaeaea);
+    color: #333;
     text-align: center;
     font-size: 18px;
-    font-weight: normal;
-    border-radius: 20px 20px 0 0;
-    letter-spacing: 0.3px;
+    font-weight: bold;
     box-sizing: border-box;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.07);
+}
+
+#chatbot-close,
+#chatbot-language {
+    position: absolute;
+    top: 15px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease, transform 0.2s ease;
+    border-radius: 50%;
+    overflow: hidden;
 }
 
 #chatbot-close {
-    position: absolute;
-    top: 12px;
     right: 15px;
-    background: none;
-    border: none;
-    font-size: 18px;
-    color: #333;
-
-    font-weight: bold;
 }
+
+#chatbot-language {
+    left: 15px;
+}
+
+#chatbot-close::after,
+#chatbot-language::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 0;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+}
+
+#chatbot-close:hover::after,
+#chatbot-language:hover::after {
+    width: 40px;
+    height: 40px;
+    opacity: 1;
+}
+
 
 #chatbot-icon.closing {
     opacity: 0;
@@ -106,19 +142,6 @@
 
 #chatbot-icon {
     transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-#chatbot-language {
-    position: absolute;
-    left: 15px;
-    top: 10px;
-    background: none;
-    border: none;
-    font-size: 14px;
-    color: #333;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
 }
 
 #chatbot-language:hover {
@@ -246,4 +269,8 @@
 
 #chatbot-send:hover {
     background: #e0b82e;
+}
+
+body {
+    background-color: rgb(25, 26, 26);
 }
