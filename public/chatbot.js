@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let messagesContainer = document.getElementById("chatbot-messages");
     let firstMessageSent = false;
     let currentLanguage = "ru";
+    let loadingElement = null;
     const inputField = document.getElementById("chatbot-input");
     const API_URL = "https://ca62-77-221-159-128.ngrok-free.app/ask";
     // const API_URL = chatbotSettings.apiUrl || "";
@@ -51,19 +52,32 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 300);
     }
 
-    let loadingElement = null;
     function showLoadingAnimation() {
         loadingElement = document.createElement("div");
         loadingElement.classList.add("bot-message", "loading");
-        loadingElement.innerHTML = "<div class='spinner'></div>";
+
+        loadingElement.innerHTML = `
+            <svg class="loading-dots" width="50" height="20" viewBox="0 0 50 20" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="10" cy="10" r="5" fill="#888">
+                    <animate attributeName="opacity" values="0.3;1;0.3" dur="1.2s" repeatCount="indefinite" begin="0"/>
+                </circle>
+                <circle cx="25" cy="10" r="5" fill="#888">
+                    <animate attributeName="opacity" values="0.3;1;0.3" dur="1.2s" repeatCount="indefinite" begin="0.2s"/>
+                </circle>
+                <circle cx="40" cy="10" r="5" fill="#888">
+                    <animate attributeName="opacity" values="0.3;1;0.3" dur="1.2s" repeatCount="indefinite" begin="0.4s"/>
+                </circle>
+            </svg>
+        `;
+
         messagesContainer.appendChild(loadingElement);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
     function hideLoadingAnimation() {
         if (loadingElement) {
-            messagesContainer.removeChild(loadingElement);
-            loadingElement = null;
+            loadingElement.classList.remove("loading");
+            loadingElement.innerHTML = ""; 
         }
     }
 
@@ -85,13 +99,40 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(response => response.json())
         .then(data => {
             hideLoadingAnimation();
-            typeText(data.response);
+            let lastBotMessage = messagesContainer.querySelector(".bot-message:last-of-type");
+            typeText(data.response, lastBotMessage);
         })
         .catch(error => {
             hideLoadingAnimation();
-            typeText("Ошибка связи с сервером");
+            let lastBotMessage = messagesContainer.querySelector(".bot-message:last-of-type");
+            typeText("Ошибка связи с сервером", lastBotMessage);
             console.error("Ошибка:", error);
         });
+    }
+
+
+    
+    function typeText(text, targetElement = null) {
+        let botMessage;
+        
+        if (targetElement) {
+            botMessage = targetElement;
+        } else {
+            botMessage = document.createElement("div");
+            botMessage.classList.add("bot-message");
+            messagesContainer.appendChild(botMessage);
+        }
+
+        let index = 0;
+        let interval = setInterval(() => {
+            if (index < text.length) {
+                botMessage.textContent += text[index];
+                index++;
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            } else {
+                clearInterval(interval);
+            }
+        }, 30);
     }
 
     inputField.addEventListener("input", function () {
@@ -193,21 +234,5 @@ document.addEventListener("DOMContentLoaded", function () {
             event.stopPropagation();
             animateClose();
         });
-    }
-
-    function typeText(text) {
-        let botMessage = document.createElement("div");
-        botMessage.classList.add("bot-message");
-        messagesContainer.appendChild(botMessage);
-        let index = 0;
-        let interval = setInterval(() => {
-            if (index < text.length) {
-                botMessage.textContent += text[index];
-                index++;
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            } else {
-                clearInterval(interval);
-            }
-        }, 30);
     }
 });
