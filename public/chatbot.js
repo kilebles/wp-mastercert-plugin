@@ -9,18 +9,18 @@ document.addEventListener("DOMContentLoaded", function () {
     let firstMessageSent = false;
     let currentLanguage = "ru";
     const inputField = document.getElementById("chatbot-input");
-    const API_URL = "https://04a1-77-221-159-128.ngrok-free.app/ask";
+    const API_URL = "https://ca62-77-221-159-128.ngrok-free.app/ask";
     // const API_URL = chatbotSettings.apiUrl || "";
 
     const translations = {
         ru: {
-            greeting: "Привет! Чем могу помочь?",
+            greeting: "Привет. У вас есть вопрос? Я здесь, чтобы помочь.",
             gpt_response: "Ответ GPT...",
             placeholder: "Задайте вопрос...",
             header: "Mastercert"
         },
         en: {
-            greeting: "Hello! How can I help you?",
+            greeting: "Hi there. Got a question? I'm here to help.",
             gpt_response: "GPT response...",
             placeholder: "Ask a question...",
             header: "Mastercert"
@@ -51,6 +51,22 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 300);
     }
 
+    let loadingElement = null;
+    function showLoadingAnimation() {
+        loadingElement = document.createElement("div");
+        loadingElement.classList.add("bot-message", "loading");
+        loadingElement.innerHTML = "<div class='spinner'></div>";
+        messagesContainer.appendChild(loadingElement);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function hideLoadingAnimation() {
+        if (loadingElement) {
+            messagesContainer.removeChild(loadingElement);
+            loadingElement = null;
+        }
+    }
+
     function sendMessage() {
         let message = inputField.value.trim();
         if (!message) return;
@@ -59,6 +75,8 @@ document.addEventListener("DOMContentLoaded", function () {
         inputField.value = "";
         inputField.style.height = "40px";
 
+        showLoadingAnimation();
+
         fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -66,9 +84,11 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(response => response.json())
         .then(data => {
+            hideLoadingAnimation();
             typeText(data.response);
         })
         .catch(error => {
+            hideLoadingAnimation();
             typeText("Ошибка связи с сервером");
             console.error("Ошибка:", error);
         });
