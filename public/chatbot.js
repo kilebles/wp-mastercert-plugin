@@ -6,25 +6,33 @@ document.addEventListener("DOMContentLoaded", function () {
     let languageButton = document.getElementById("chatbot-language");
     let languageDropdown = document.getElementById("chatbot-language-select");
     let messagesContainer = document.getElementById("chatbot-messages");
+
+    let chatId = localStorage.getItem("chatbotChatId");
+    if (!chatId) {
+        chatId = crypto.randomUUID();
+        localStorage.setItem("chatbotChatId", chatId);
+    }
+
     let firstMessageSent = false;
     let currentLanguage = "ru";
-    let loadingElement = null;
+
+    let isBotResponding = false;
+
     const inputField = document.getElementById("chatbot-input");
-    const API_URL = "https://ca62-77-221-159-128.ngrok-free.app/ask";
+    const API_URL = "https://e1ea-77-221-159-128.ngrok-free.app/ask";
     // const API_URL = chatbotSettings.apiUrl || "";
+
 
     const translations = {
         ru: {
             greeting: "Привет. У вас есть вопрос? Я здесь, чтобы помочь.",
-            gpt_response: "Ответ GPT...",
             placeholder: "Задайте вопрос...",
-            header: "Mastercert"
+            header: "Mastcert"
         },
         en: {
             greeting: "Hi there. Got a question? I'm here to help.",
-            gpt_response: "GPT response...",
             placeholder: "Ask a question...",
-            header: "Mastercert"
+            header: "Mastcert"
         }
     };
 
@@ -52,87 +60,99 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 300);
     }
 
-    function showLoadingAnimation() {
-        loadingElement = document.createElement("div");
-        loadingElement.classList.add("bot-message", "loading");
+    function createLoadingMessage() {
+        let botMessage = document.createElement("div");
+        botMessage.classList.add("bot-message");
 
-        loadingElement.innerHTML = `
-            <svg class="loading-dots" width="50" height="20" viewBox="0 0 50 20" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="10" cy="10" r="5" fill="#888">
-                    <animate attributeName="opacity" values="0.3;1;0.3" dur="1.2s" repeatCount="indefinite" begin="0"/>
-                </circle>
-                <circle cx="25" cy="10" r="5" fill="#888">
-                    <animate attributeName="opacity" values="0.3;1;0.3" dur="1.2s" repeatCount="indefinite" begin="0.2s"/>
-                </circle>
-                <circle cx="40" cy="10" r="5" fill="#888">
-                    <animate attributeName="opacity" values="0.3;1;0.3" dur="1.2s" repeatCount="indefinite" begin="0.4s"/>
-                </circle>
-            </svg>
+        let botText = document.createElement("span");
+        botText.classList.add("bot-text");
+
+        let loadingDots = document.createElement("div");
+        loadingDots.classList.add("loading-dots");
+        loadingDots.innerHTML = `
+            <span></span>
+            <span></span>
+            <span></span>
         `;
 
-        messagesContainer.appendChild(loadingElement);
+        botMessage.appendChild(botText);
+        botMessage.appendChild(loadingDots);
+
+        messagesContainer.appendChild(botMessage);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        return botMessage;
     }
 
-    function hideLoadingAnimation() {
-        if (loadingElement) {
-            loadingElement.classList.remove("loading");
-            loadingElement.innerHTML = ""; 
-        }
-    }
+    function turnDotsIntoText(botMessageElement, responseText) {
+        if (!botMessageElement) return;
 
-    function sendMessage() {
-        let message = inputField.value.trim();
-        if (!message) return;
+        let dots = botMessageElement.querySelector(".loading-dots");
+        if (dots) dots.remove();
 
-        messagesContainer.innerHTML += `<div class="user-message">${message}</div>`;
-        inputField.value = "";
-        inputField.style.height = "40px";
-
-        showLoadingAnimation();
-
-        fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: message })
-        })
-        .then(response => response.json())
-        .then(data => {
-            hideLoadingAnimation();
-            let lastBotMessage = messagesContainer.querySelector(".bot-message:last-of-type");
-            typeText(data.response, lastBotMessage);
-        })
-        .catch(error => {
-            hideLoadingAnimation();
-            let lastBotMessage = messagesContainer.querySelector(".bot-message:last-of-type");
-            typeText("Ошибка связи с сервером", lastBotMessage);
-            console.error("Ошибка:", error);
-        });
-    }
-
-
-    
-    function typeText(text, targetElement = null) {
-        let botMessage;
-        
-        if (targetElement) {
-            botMessage = targetElement;
-        } else {
-            botMessage = document.createElement("div");
-            botMessage.classList.add("bot-message");
-            messagesContainer.appendChild(botMessage);
+        let botText = botMessageElement.querySelector(".bot-text");
+        if (!botText) {
+            botText = document.createElement("span");
+            botText.classList.add("bot-text");
+            botMessageElement.appendChild(botText);
         }
 
+        typeText(responseText, botText);
+    }
+
+    function typeText(text, targetElement) {
         let index = 0;
         let interval = setInterval(() => {
             if (index < text.length) {
-                botMessage.textContent += text[index];
+                targetElement.textContent += text[index];
                 index++;
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             } else {
                 clearInterval(interval);
             }
-        }, 30);
+        }, 10);
+    }
+
+    function sendMessage() {
+        if (isBotResponding) return;
+        isBotResponding = true;
+        sendButton.disabled = true;
+
+        let message = inputField.value.trim();
+        if (!message) {
+            isBotResponding = false;
+            sendButton.disabled = false;
+            return;
+        }
+
+        messagesContainer.innerHTML += `<div class="user-message">${message}</div>`;
+        saveMessage("user", message);
+
+        inputField.value = "";
+        inputField.style.height = "40px";
+
+        let botLoadingMessage = createLoadingMessage();
+
+        fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: message, chati_id: chatId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            turnDotsIntoText(botLoadingMessage, data.response);
+            saveMessage("bot", data.response);
+        })
+        .catch(error => {
+            console.error("Ошибка:", error);
+            turnDotsIntoText(botLoadingMessage, "Server error");
+            turnDotsIntoText(botLoadingMessage, "Try again later");
+            saveMessage("bot", "Server error. Try again later");
+        })
+        .finally(() => {
+            isBotResponding = false;
+            sendButton.disabled = false;
+        });
     }
 
     inputField.addEventListener("input", function () {
@@ -152,13 +172,21 @@ document.addEventListener("DOMContentLoaded", function () {
     chatbotIcon.addEventListener("click", function () {
         if (!chatbotIcon.classList.contains("open")) {
             animateOpen();
+    
             if (!firstMessageSent) {
                 firstMessageSent = true;
                 messagesContainer.innerHTML = "";
-                setTimeout(() => {
-                    typeText(translations[currentLanguage].greeting);
-                }, 1000);
-            }
+                loadChatHistory();
+            
+                const history = JSON.parse(localStorage.getItem("chatbotHistory") || "[]");
+                if (history.length === 0) {
+                    setTimeout(() => {
+                        let botMessage = createLoadingMessage();
+                        turnDotsIntoText(botMessage, translations[currentLanguage].greeting);
+                        saveMessage("bot", translations[currentLanguage].greeting);
+                    }, 600);
+                }
+            }            
         }
     });
 
@@ -184,10 +212,7 @@ document.addEventListener("DOMContentLoaded", function () {
         button.addEventListener("click", function () {
             currentLanguage = this.dataset.lang;
             languageDropdown.style.display = "none";
-            messagesContainer.innerHTML = "";
-            firstMessageSent = false;
             updateUI();
-            typeText(translations[currentLanguage].greeting);
         });
     });
 
@@ -214,25 +239,54 @@ document.addEventListener("DOMContentLoaded", function () {
                 </svg>
             </button>
         `;
-        sendButton.textContent = translations[currentLanguage].send;
+    
         inputField.placeholder = translations[currentLanguage].placeholder;
+    
         languageButton = document.getElementById("chatbot-language");
         languageDropdown = document.getElementById("chatbot-language-select");
         closeButton = document.getElementById("chatbot-close");
+    
         languageButton.addEventListener("click", toggleLanguageDropdown);
+    
         document.querySelectorAll("#chatbot-language-select button").forEach(button => {
             button.addEventListener("click", function () {
                 currentLanguage = this.dataset.lang;
                 languageDropdown.style.display = "none";
-                messagesContainer.innerHTML = "";
-                firstMessageSent = false;
+    
                 updateUI();
-                typeText(translations[currentLanguage].greeting);
             });
         });
+    
         closeButton.addEventListener("click", function (event) {
             event.stopPropagation();
             animateClose();
         });
+    }
+
+    function saveMessage(role, text) {
+        const history = JSON.parse(localStorage.getItem("chatbotHistory") || "[]");
+        history.push({ role, text });
+        localStorage.setItem("chatbotHistory", JSON.stringify(history));
+    }
+    
+    function loadChatHistory() {
+        const history = JSON.parse(localStorage.getItem("chatbotHistory") || "[]");
+        history.forEach(msg => {
+            if (msg.role === "user") {
+                messagesContainer.innerHTML += `<div class="user-message">${msg.text}</div>`;
+            } else if (msg.role === "bot") {
+                const botMessage = document.createElement("div");
+                botMessage.classList.add("bot-message");
+    
+                const botText = document.createElement("span");
+                botText.classList.add("bot-text");
+                botText.textContent = msg.text;
+    
+                botMessage.appendChild(botText);
+                messagesContainer.appendChild(botMessage);
+            }
+        });
+    
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 });
