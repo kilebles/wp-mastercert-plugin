@@ -136,7 +136,10 @@ document.addEventListener("DOMContentLoaded", function () {
         fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: message, chati_id: chatId })
+            body: JSON.stringify({ 
+                message: message, 
+                chat_id: chatId
+            })
         })
         .then(response => response.json())
         .then(data => {
