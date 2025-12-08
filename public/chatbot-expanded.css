@@ -5,12 +5,14 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: white;
+    background: rgba(249, 249, 249, 0.95);
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
     z-index: 999;
     opacity: 0;
     pointer-events: none;
     transform: translateY(100%);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
 }
@@ -23,63 +25,57 @@ body.expanded .chat-window {
 
 /* При расширении строка поиска переходит вниз */
 body.expanded .chatbot-bar {
-    top: auto;
     bottom: 0;
     left: 0;
     right: 0;
     transform: none;
     width: 100%;
     max-width: 100%;
-    border-radius: 0;
+    border-radius: 30px 30px 0 0;
     border: none;
-    border-top: 1px solid #e0e0e0;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
-    padding: 16px 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+
+    /* Glass эффект для развернутого состояния */
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+
+    box-shadow:
+        0 -4px 24px rgba(0, 0, 0, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    padding: 16px 20px 16px 20px;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+    gap: 10px;
 }
 
-/* Скрываем иконку поиска в развернутом состоянии */
-body.expanded .chatbot-search-icon {
-    display: none;
+/* В развернутом состоянии - уменьшаем иконки и показываем back */
+body.expanded .chatbot-edit-icon img {
+    width: 20px;
+    height: 20px;
+}
+
+body.expanded .gpt-icon {
+    width: 48px;
+    height: 48px;
+}
+
+body.expanded .chatbot-voice img {
+    width: 20px;
+    height: 20px;
+}
+
+body.expanded .chatbot-back img {
+    width: 20px;
+    height: 20px;
+}
+
+/* Показываем кнопку back в развернутом состоянии */
+body.expanded .chatbot-back {
+    display: flex;
 }
 
 .chat-container {
     position: relative;
-}
-
-/* Заголовок с кнопкой назад */
-.chat-header {
-    padding: 12px 16px;
-    border-bottom: 1px solid #e0e0e0;
-    display: none;
-    align-items: center;
-    background: white;
-    flex-shrink: 0;
-}
-
-body.expanded .chat-header {
-    display: flex;
-}
-
-.chat-back {
-    background: transparent;
-    border: none;
-    padding: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #5f6368;
-    border-radius: 50%;
-    transition: background 0.2s ease;
-}
-
-.chat-back svg {
-    width: 24px;
-    height: 24px;
-}
-
-.chat-back:hover {
-    background: rgba(0, 0, 0, 0.05);
 }
 
 .chat-messages {

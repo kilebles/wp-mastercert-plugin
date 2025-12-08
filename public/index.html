@@ -9,24 +9,24 @@
 <body>
     <div class="chat-container">
         <div class="chat-window" id="chatWindow">
-            <div class="chat-close" id="chatClose">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            </div>
             <div class="chat-messages" id="chatMessages"></div>
         </div>
         <div class="chatbot-bar">
-            <input type="text" class="chatbot-input" placeholder="Введите ваш вопрос...">
+            <button class="chatbot-edit-icon">
+                <img src="Edit.png" alt="Edit">
+            </button>
+            <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Написать...">
             <button class="chatbot-send" id="chatSend">
-                <img src="gpt-icon.png" alt="GPT" class="gpt-icon">
+                <img src="gpt.gif" alt="GPT" class="gpt-icon">
+            </button>
+            <button class="chatbot-voice">
+                <img src="Mic.png" alt="Mic">
+            </button>
+            <button class="chatbot-back" id="chatBack">
+                <img src="back.png" alt="Back">
             </button>
         </div>
     </div>
-
-    <img src="bot-icon.png" alt="Bot" class="bot-icon">
 
     <script src="chatbot-storage.js"></script>
     <script src="chatbot-ai.js"></script>
