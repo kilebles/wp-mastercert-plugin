@@ -25,17 +25,21 @@ body.expanded .chat-window {
 
 /* При расширении строка поиска переходит вниз */
 body.expanded .chatbot-bar {
-    bottom: 0;
-    left: 0;
-    right: 0;
-    transform: none;
-    width: 100%;
-    max-width: 100%;
-    border-radius: 30px 30px 0 0;
+    position: fixed;
+
+    /* Нижний отступ */
+    bottom: 20px;
+
+    /* Центрирование и ширина как в свернутом виде */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 1400px;
+
+    border-radius: 30px;
     border: none;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
 
-    /* Glass эффект для развернутого состояния */
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(30px) saturate(180%);
     -webkit-backdrop-filter: blur(30px) saturate(180%);
@@ -43,15 +47,32 @@ body.expanded .chatbot-bar {
     box-shadow:
         0 -4px 24px rgba(0, 0, 0, 0.06),
         inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    padding: 16px 20px 16px 20px;
-    padding-bottom: max(16px, env(safe-area-inset-bottom));
-    gap: 10px;
+
+    padding: 18px 14px;
+    padding-bottom: max(18px, env(safe-area-inset-bottom));
+
+    gap: 12px;
+    box-sizing: border-box;
 }
+
+/* Поле ввода шире в expanded */
+
 
 /* В развернутом состоянии - уменьшаем иконки и показываем back */
 body.expanded .chatbot-edit-icon img {
     width: 20px;
     height: 20px;
+}
+
+body.expanded .chatbot-send {
+    position: static;
+    transform: none;
+    order: 3;
+    margin: 0;
+}
+
+body.expanded .chatbot-send:hover {
+    transform: scale(1.02);
 }
 
 body.expanded .gpt-icon {
@@ -69,6 +90,11 @@ body.expanded .chatbot-back img {
     height: 20px;
 }
 
+body.expanded .chatbot-input {
+    font-size: 16px;
+    flex: 1.3;
+}
+
 /* Показываем кнопку back в развернутом состоянии */
 body.expanded .chatbot-back {
     display: flex;
@@ -81,7 +107,8 @@ body.expanded .chatbot-back {
 .chat-messages {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 20px 10px;
+    box-sizing: border-box;
 }
 
 #chatMessages {
