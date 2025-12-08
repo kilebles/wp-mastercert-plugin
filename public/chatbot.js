@@ -2,11 +2,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const input = document.querySelector('.chatbot-input');
     const chatWindow = document.getElementById('chatWindow');
     const chatMessages = document.getElementById('chatMessages');
-    const chatClose = document.querySelector('.chat-close');
+    const chatBack = document.getElementById('chatBack');
     const chatSend = document.getElementById('chatSend');
     const body = document.body;
 
     ChatStorage.loadChatHistory(chatMessages);
+
+    // Открываем чат при клике на поле ввода
+    input.addEventListener('focus', () => {
+        if (!body.classList.contains('expanded')) {
+            body.classList.add('expanded');
+        }
+    });
 
     function sendMessage() {
         if (input.value.trim() === '') return;
@@ -23,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         msg.textContent = message;
 
         chatMessages.appendChild(msg);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
 
         ChatStorage.saveMessage("user", message);
 
@@ -43,9 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
         chatSend.addEventListener('click', sendMessage);
     }
 
-    if (chatClose) {
-        chatClose.addEventListener('click', () => {
+    // Закрываем чат при клике на кнопку назад
+    if (chatBack) {
+        chatBack.addEventListener('click', () => {
             body.classList.remove('expanded');
+            input.blur(); // Убираем фокус с поля ввода
         });
     }
 
@@ -54,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         msg.classList.add('chat-message', 'bot');
         msg.textContent = text;
         chatMessages.appendChild(msg);
-        chatWindow.scrollTop = chatWindow.scrollHeight;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
 
         ChatStorage.saveMessage("bot", text);
     };
