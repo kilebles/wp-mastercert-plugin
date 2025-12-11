@@ -4,7 +4,7 @@
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
-    max-width: 700px;
+    max-width: 350px;
     display: flex;
     align-items: center;
     gap: 0;
@@ -61,7 +61,7 @@
     border: none;
     outline: none;
     background: transparent;
-    font-size: 17px;
+    font-size: 14px;
     flex: 1;
     color: #1d1d1f;
     font-weight: 400;
@@ -92,8 +92,8 @@
 }
 
 .gpt-icon {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     object-fit: contain;
     filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.1));
 }
