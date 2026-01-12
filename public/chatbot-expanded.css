@@ -82,18 +82,19 @@ body.expanded .chat-close {
 }
 
 .chat-message {
-    margin: 6px 0;
+    margin: 6px 40px;
     padding: 10px 14px;
     border-radius: 8px;
-    max-width: 92%;
+    max-width: calc(100% - 80px);
     word-wrap: break-word;
-    font-size: 15px;
+    font-size: 20px;
     line-height: 1.4;
 }
 
 .chat-message.user {
     background: #e6f0ff;
     align-self: flex-start;
+    padding: 15px 20px;
 }
 
 .chat-message.bot {
@@ -102,6 +103,7 @@ body.expanded .chat-close {
     opacity: 0;
     transform: translateY(5px);
     animation: fadeIn 0.35s ease forwards;
+    padding: 15px 20px;
 }
 
 @keyframes fadeIn {

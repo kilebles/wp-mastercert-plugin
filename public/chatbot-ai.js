@@ -45,7 +45,12 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         botText.style.opacity = 0;
-        botText.textContent = responseText;
+
+        botText.innerHTML = responseText
+            .replace(/\n/g, '<br>')
+            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+            .replace(/\*(.*?)\*/g, '<i>$1</i>')
+            .replace(/(\d+)\.\s/g, '<br>$1. ');
 
         requestAnimationFrame(() => {
             botText.style.transition = "opacity 0.4s ease";
@@ -69,22 +74,22 @@ document.addEventListener("DOMContentLoaded", function () {
                 chat_id: chatId
             })
         })
-        .then(response => response.json())
-        .then(data => {
-            setTimeout(() => {
-                turnDotsIntoText(botLoadingMessage, data.response);
-                ChatStorage.saveMessage("bot", data.response); // сохраняем историю
-                isBotResponding = false;
-            }, 800);
-        })
-        .catch(error => {
-            console.error("Ошибка:", error);
-            setTimeout(() => {
-                const fallback = "Ошибка сервера. Попробуйте позже.";
-                turnDotsIntoText(botLoadingMessage, fallback);
-                displayBotResponse(fallback);
-                isBotResponding = false;
-            }, 800);
-        });
+            .then(response => response.json())
+            .then(data => {
+                setTimeout(() => {
+                    turnDotsIntoText(botLoadingMessage, data.response);
+                    ChatStorage.saveMessage("bot", data.response); // сохраняем историю
+                    isBotResponding = false;
+                }, 800);
+            })
+            .catch(error => {
+                console.error("Ошибка:", error);
+                setTimeout(() => {
+                    const fallback = "Ошибка сервера. Попробуйте позже.";
+                    turnDotsIntoText(botLoadingMessage, fallback);
+                    displayBotResponse(fallback);
+                    isBotResponding = false;
+                }, 800);
+            });
     };
 });
